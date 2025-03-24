@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <p v-else class="text-center text-lg text-gray-600">Carregando imóveis...</p>
+        <p v-else class="text-center text-lg text-gray-600">Ops! Não encontramos imóveis que correspondam ao seu filtro.</p>
     </div>
 </template>
 
