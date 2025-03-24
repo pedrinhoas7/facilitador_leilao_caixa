@@ -1,34 +1,58 @@
 <template>
-    <div class="filters">
-        <label>Filtrar por bairros:</label>
-        <div v-for="bairro in bairrosUnicos" :key="bairro">
-            <input type="checkbox" :value="bairro" v-model="bairrosFiltro" />
-            <label>{{ bairro }}</label>
+    <div class="flex flex-col p-4 bg-gray-50 rounded-md " >
+        <h3 class="text-xl font-semibold p-1">Filtros</h3>
+
+        <label for="searchBairros" class="block text-sm font-medium mb-2">Forma de Pagamento</label>
+        <div class="mb-4 flex items-center">     
+            <input type="checkbox" v-model="financiamentoFiltro" class="mr-2" />
+            <label class="text-sm">Aceita financiamento</label>
+        </div>
+        <div class="mb-4 flex items-center">   
+            <input type="checkbox" v-model="FgtsFiltro" class="mr-2" />
+            <label class="text-sm">Aceita FGTS</label>
         </div>
 
-        <div>
-            <label for="ordenacao">Ordenar por:</label>
-            <select id="ordenacao" v-model="ordenacao">
-                <option value="bairro">Bairro (Alfabética)</option>
+        <!-- Search input to filter bairros -->
+        <div class="mb-4 ">
+            <label for="searchBairros" class="block text-sm font-medium mb-2">Pesquisar por bairro:</label>
+            <input
+                id="searchBairros"
+                v-model="bairroSearch"
+                type="text"
+                placeholder="Filtrar bairros..."
+                class="w-full p-2 border rounded-md shadow-sm bg-white"
+            />
+        </div>
+
+        <div class="mb-4 overflow-y-scroll" style="height: 20vw;">
+            <div v-for="bairro in filteredBairros" :key="bairro" class="flex items-center mb-2 " >
+                <input type="checkbox" :value="bairro" v-model="bairrosFiltro" class="mr-2" />
+                <label class="text-sm ">{{ bairro }}</label>
+            </div>
+        </div>
+
+
+        <div class="mb-4">
+            <label for="ordenacao" class="block text-sm font-medium mb-2">Ordenar por:</label>
+            <select id="ordenacao" v-model="ordenacao" class="w-full p-2 border rounded-md shadow-sm bg-white">
+                <option value="default">Padrão</option>
                 <option value="valorMaior">Maior valor</option>
                 <option value="valorMenor">Menor valor</option>
                 <option value="avaliacaoMaior">Maior avaliação</option>
                 <option value="avaliacaoMenor">Menor avaliação</option>
             </select>
         </div>
-
-        <div>
-            <label>Filtrar por financiamento:</label>
-            <input type="checkbox" v-model="financiamentoFiltro" /> Aceita financiamento
-        </div>
-
-        <button @click="salvarCSV">Salvar CSV</button>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useImoveisStore } from '@/store/imoveisModule';
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
+
+const showFilters = ref(false);
+const showBairros = ref(false);
+const bairroSearch = ref('');
+
 const store = useImoveisStore();
 
 const bairrosUnicos = computed(() => store.bairrosUnicos);
@@ -47,20 +71,31 @@ const financiamentoFiltro = computed({
     set: (value) => store.setFinanciamentoFiltro(value),
 });
 
-const salvarCSV = () => store.salvarCSV();
+const FgtsFiltro = computed({
+    get: () => store.fgtsFiltro,
+    set: (value) => store.setFgtsFiltro(value),
+});
+
+// Filtered bairros based on the search input
+const filteredBairros = computed(() => {
+    if (!bairroSearch.value) {
+        return bairrosUnicos.value;
+    }
+    return bairrosUnicos.value.filter(bairro =>
+        bairro.toLowerCase().includes(bairroSearch.value.toLowerCase())
+    );
+});
+
+const toggleBairros = () => {
+    showBairros.value = !showBairros.value;
+};
+
+const searchImoveis = () => {
+    // Implement your search logic here
+    store.searchImoveis({
+        bairrosFiltro: bairrosFiltro.value,
+        ordenacao: ordenacao.value,
+        financiamentoFiltro: financiamentoFiltro.value
+    });
+};
 </script>
-
-<style scoped>
-.filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 20px;
-}
-
-select,
-button {
-    margin-left: 5px;
-    padding: 5px;
-}
-</style>

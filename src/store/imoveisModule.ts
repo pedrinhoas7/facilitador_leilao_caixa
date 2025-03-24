@@ -6,8 +6,9 @@ export const useImoveisStore = defineStore('imoveis', {
   state: () => ({
     imoveis: [],
     financiamentoFiltro: null,
+    fgtsFiltro: null,
     bairrosFiltro: [],
-    ordenacao: 'bairro',
+    ordenacao: 'default',
   }),
 
   actions: {
@@ -86,6 +87,9 @@ export const useImoveisStore = defineStore('imoveis', {
     setFinanciamentoFiltro(financiamento: boolean | null) {
       this.financiamentoFiltro = financiamento;
     },
+    setFgtsFiltro(fgts: boolean | null) {
+      this.fgtsFiltro = fgts;
+    },
   },
 
   getters: {
@@ -93,7 +97,8 @@ export const useImoveisStore = defineStore('imoveis', {
       return state.imoveis.filter(imovel => {
         const bairroFiltro = state.bairrosFiltro.length === 0 || state.bairrosFiltro.includes(imovel.bairro);
         const financiamento = !state.financiamentoFiltro || imovel.financiamento === 'Sim';
-        return bairroFiltro && financiamento;
+        const fgts = !state.fgtsFiltro || imovel.fgts === 'Sim';
+        return bairroFiltro && financiamento && fgts;
       });
     },
 

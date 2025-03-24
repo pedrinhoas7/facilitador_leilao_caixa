@@ -1,22 +1,29 @@
 <template>
-    <div v-if="imoveisOrdenados.length">
-        <div class="grid">
-            <div v-for="imovel in imoveisOrdenados" :key="imovel.id" class="imovel">
-                <img :src="imovel.imagem" alt="Imagem do imóvel" width="200" />
-                <p>{{ imovel.bairro }} - R$ <span class="fonte">{{ imovel.valorString }}</span></p>
-                <p>Avaliação: {{ imovel.avaliacaoString }}</p>
-                <p>{{ imovel.endereco }}</p>
-                <p>{{ imovel.cidade }} - {{ imovel.estado }}</p>
-                <p>Área: {{ imovel.metros }} m²</p>
-                <p>Financiamento: {{ imovel.financiamento }}</p>
-                <p>FGTS: {{ imovel.fgts }}</p>
-                <a :href="imovel.matricula" target="_blank">Matrícula</a>
-                <br>
-                <a :href="imovel.link" target="_blank">Ver detalhes</a>
+    <div class="flex overflow-hidden ">
+        <div v-if="imoveisOrdenados.length" class="h-full overflow-y-scroll">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div v-for="imovel in imoveisOrdenados" :key="imovel.id"
+                    class="bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden">
+                    <img :src="imovel.imagem" alt="Imagem do imóvel" class="w-full h-48 object-cover" />
+                    <div class="p-4">
+                        <p class=" font-semibold text-gray-800">{{ imovel.bairro }}</p>
+                        <p class="text-sm text-gray-600">{{ imovel.modalidade }}</p>
+                        <p class="text-sm text-red-500 font-bold">Avaliação: {{ imovel.avaliacaoString }}</p>
+                        <p class="text-sm text-green-700 font-bold">Preço: {{ imovel.valor }}</p>
+                        <p class="text-sm text-gray-600 font-bold">Financiamento: {{ imovel.financiamento }}</p>
+                        <p class="text-sm text-gray-600 font-bold">FGTS: {{ imovel.fgts }}</p>
+                        <div class="mt-4 space-x-4">
+                            <a :href="imovel.matricula" target="_blank"
+                                class="text-blue-600 hover:underline text-sm">Matrícula</a>
+                            <a :href="imovel.link" target="_blank" class="text-blue-600 hover:underline text-sm">Ver
+                                detalhes</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        <p v-else class="text-center text-lg text-gray-600">Carregando imóveis...</p>
     </div>
-    <p v-else>Carregando imóveis...</p>
 </template>
 
 <script setup lang="ts">
@@ -30,26 +37,5 @@ store.carregarCSV();
 </script>
 
 <style scoped>
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
 
-.imovel {
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-}
-
-a {
-    color: #04986D;
-    text-decoration: none;
-}
-
-.fonte {
-    font-size: 20px;
-    font-weight: bold;
-}
 </style>
