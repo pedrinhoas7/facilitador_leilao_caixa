@@ -2,6 +2,10 @@
 
 Este projeto é um facilitador de busca de imóveis disponibilizados pela Caixa Econômica Federal para venda, incluindo leilões judiciais e vendas online. Nosso objetivo é melhorar a experiência do usuário ao acessar essas informações de forma transparente e acessível.
 
+## 🗺️ Deploy
+- **Plataforma**: Vercel
+- **Link**: [https://leilaocaixa-jp.vercel.app/](https://leilaocaixa-jp.vercel.app/)
+
 ## 🛠️ Tecnologias Utilizadas
 - Vue.js 3 + TypeScript
 - Tailwind CSS
@@ -29,12 +33,10 @@ Este projeto é um facilitador de busca de imóveis disponibilizados pela Caixa 
 As informações exibidas neste projeto foram obtidas do site oficial da Caixa Econômica Federal e estão disponíveis publicamente no link:
 [https://venda-imoveis.caixa.gov.br/sistema/download-lista.asp](https://venda-imoveis.caixa.gov.br/sistema/download-lista.asp)
 
-**Não vendemos imóveis e não somos afiliados à Caixa.** Somos apenas um facilitador de busca e não nos responsabilizamos por atualizações ou por qualquer problema relacionado às informações exibidas.
-poderá ser feitá a atualização da lista de imóveis com base no arquivo csv que está na pasta public
+**Não vendemos imóveis e não somos afiliados à Caixa.** Somos apenas um facilitador de busca e não nos responsabilizamos por atualizações ou por qualquer problema relacionado às informações exibidas. A lista de imóveis pode ser atualizada com base no arquivo CSV que está na pasta `public`.
 
 ## 🌟 Contribuição
 Este é um projeto open-source! Se desejar contribuir, fique à vontade para abrir issues ou enviar pull requests.
 
 ## 🚀 Licença
 Este projeto é licenciado sob a MIT License. Consulte o arquivo `LICENSE` para mais detalhes.
-
