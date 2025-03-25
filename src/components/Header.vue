@@ -1,7 +1,7 @@
 <template>
     <header class="bg-blue-950 text-white p-1 w-full flex items-center relative">
         <img src="/logo.png" alt="Logo" class="w-10 h-10 ml-2" />
-        <h1 class="text-2xl font-semibold text-blue-50 ml-2 flex-grow relative">João Pessoa Imóveis Caixa</h1>
+        <h1 class="text-2xl font-semibold text-blue-50 ml-2 flex-grow relative">Imóveis CAIXA</h1>
         <button @click="openModal" class="p-2 rounded-full border border-white relative">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6h15M4.5 12h15M4.5 18h15" />

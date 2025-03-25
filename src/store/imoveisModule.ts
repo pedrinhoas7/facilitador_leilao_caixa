@@ -8,6 +8,7 @@ export const useImoveisStore = defineStore('imoveis', {
     financiamentoFiltro: null,
     fgtsFiltro: null,
     bairrosFiltro: [],
+    cidadesFiltro: [], // Novo filtro por cidade
     ordenacao: 'default',
   }),
 
@@ -15,42 +16,68 @@ export const useImoveisStore = defineStore('imoveis', {
     async carregarCSV() {
       const response = await fetch('/imoveis.csv');
       const data = await response.text();
-
-      const imoveisArray = data
-        .split('\n')
-        .map(linha => linha.split(';').map(coluna => coluna.trim()))
-        .filter(colunas => colunas.length >= 11)
-        .map(async colunas => {
-          const id = colunas[0];
-          const financiamentoData = colunas[11] == null ? await this.verificarFinanciamento(id) : { financiamento: colunas[11], fgts: colunas[12] };
-          return {
-            id,
-            estado: colunas[1],
-            cidade: colunas[2],
-            bairro: colunas[3],
-            endereco: colunas[4],
-            valor: parseFloat(colunas[5].replace(',', '.').trim()) || 0,
-            avaliacao: parseFloat(colunas[6].replace(',', '.').trim()) || 0,
-            valorString: colunas[5],
-            avaliacaoString: colunas[6],
-            desconto: colunas[7] || '',
-            descricao: colunas[8] || '',
-            modalidade: colunas[9] || '',
-            link: colunas[10] || '',
-            imagem: `https://venda-imoveis.caixa.gov.br/fotos/F${id}21.jpg`,
-            matricula: `https://venda-imoveis.caixa.gov.br/editais/matricula/PB/${id}.pdf`,
-            financiamento: financiamentoData?.financiamento ?? 'Não informado',
-            fgts: financiamentoData?.fgts ?? 'Não informado',
-          };
-        });
-
-      this.imoveis = await Promise.all(imoveisArray);
-    },
+  
+      const linhas = data.split('\n');
+  
+      const imoveisArray = linhas
+          .map(linha => linha.split(';').map(coluna => coluna.trim()))
+          .filter(colunas => colunas.length >= 11)
+          .map(colunas => {
+              const id = colunas[0];
+              return {
+                  id,
+                  estado: colunas[1],
+                  cidade: colunas[2],
+                  bairro: colunas[3],
+                  endereco: colunas[4],
+                  valor: parseFloat(colunas[5].replace(',', '.').trim()) || 0,
+                  avaliacao: parseFloat(colunas[6].replace(',', '.').trim()) || 0,
+                  valorString: colunas[5],
+                  avaliacaoString: colunas[6],
+                  desconto: colunas[7] || '',
+                  descricao: colunas[8] || '',
+                  modalidade: colunas[9] || '',
+                  link: colunas[10] || '',
+                  imagem: `https://venda-imoveis.caixa.gov.br/fotos/F${id}21.jpg`,
+                  matricula: `https://venda-imoveis.caixa.gov.br/editais/matricula/PB/${id}.pdf`,
+                  financiamento: colunas[11] ?? null,
+                  fgts: colunas[12] ?? null
+              };
+          });
+  
+      const batchSize = 100;
+      for (let i = 0; i < imoveisArray.length; i += batchSize) {
+          const batch = imoveisArray.slice(i, i + batchSize);
+  
+          // IDs que precisam de verificação de financiamento
+          const idsParaVerificar = batch.filter(imovel => imovel.financiamento === null).map(imovel => imovel.id);
+  
+          if (idsParaVerificar.length > 0) {
+              const resultados = await Promise.all(idsParaVerificar.map(id => this.verificarFinanciamento(id)));
+  
+              batch.forEach((imovel, index) => {
+                  if (imovel.financiamento === null) {
+                      imovel.financiamento = resultados[index]?.financiamento ?? 'Não informado';
+                      imovel.fgts = resultados[index]?.fgts ?? 'Não informado';
+                  }
+              });
+          }
+      }
+  
+      this.imoveis = imoveisArray;
+  },
+  
 
     async verificarFinanciamento(id: string) {
       try {
-        const url = `http://localhost:3000/proxy/imovel/${id}`;
-        const res = await axios.get(url);
+        const url = `http://localhost:8001/proxy/imovel/${id}`;
+
+
+        const res = await axios.get(url, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         return {
           financiamento: res.data.financiamento ? 'Sim' : 'Não',
           fgts: res.data.fgts ? 'Sim' : 'Não',
@@ -84,6 +111,10 @@ export const useImoveisStore = defineStore('imoveis', {
       this.bairrosFiltro = bairros;
     },
 
+    setCidadesFiltro(cidades: string[]) {
+      this.cidadesFiltro = cidades;
+    },
+
     setFinanciamentoFiltro(financiamento: boolean | null) {
       this.financiamentoFiltro = financiamento;
     },
@@ -96,9 +127,10 @@ export const useImoveisStore = defineStore('imoveis', {
     imoveisFiltrados: (state) => {
       return state.imoveis.filter(imovel => {
         const bairroFiltro = state.bairrosFiltro.length === 0 || state.bairrosFiltro.includes(imovel.bairro);
+        const cidadesFiltro = state.cidadesFiltro.length === 0 || state.cidadesFiltro.includes(imovel.cidade);
         const financiamento = !state.financiamentoFiltro || imovel.financiamento === 'Sim';
         const fgts = !state.fgtsFiltro || imovel.fgts === 'Sim';
-        return bairroFiltro && financiamento && fgts;
+        return bairroFiltro && financiamento && fgts && cidadesFiltro;
       });
     },
 
@@ -122,6 +154,9 @@ export const useImoveisStore = defineStore('imoveis', {
 
     bairrosUnicos: (state) => {
       return [...new Set(state.imoveis.map(imovel => imovel.bairro))];
+    },
+    cidadesUnicas: (state) => {
+      return [...new Set(state.imoveis.map(imovel => imovel.cidade))];
     },
   },
 });

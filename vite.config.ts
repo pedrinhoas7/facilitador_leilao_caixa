@@ -10,4 +10,5 @@ export default defineConfig({
       '@': '/src', // This ensures @ refers to the src directory
     },
   },
+  
 })
