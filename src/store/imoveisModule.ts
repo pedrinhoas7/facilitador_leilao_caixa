@@ -40,8 +40,8 @@ export const useImoveisStore = defineStore('imoveis', {
                   link: colunas[10] || '',
                   imagem: `https://venda-imoveis.caixa.gov.br/fotos/F${id}21.jpg`,
                   matricula: `https://venda-imoveis.caixa.gov.br/editais/matricula/PB/${id}.pdf`,
-                  financiamento: colunas[11] ?? null,
-                  fgts: colunas[12] ?? null
+                  financiamento: colunas[11] == "Erro"? null : colunas[11] ?? null,
+                  fgts: colunas[12] == "Erro"? null : colunas[12] ?? null
               };
           });
   
